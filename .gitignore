@@ -95,3 +95,4 @@ dump.rdb
 db.sqlite3
 # settings/local.py
 /identifier.sqlite
+/venv/

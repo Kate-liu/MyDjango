@@ -93,4 +93,4 @@ celerybeat-schedule.db
 celerybeat.pid
 dump.rdb
 db.sqlite3
-settings/local.py
+# settings/local.py

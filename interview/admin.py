@@ -1,13 +1,11 @@
 from django.contrib import admin
 from django.http import HttpResponse
 
-from interview.models import Candidate
-
 import logging
 import csv
 from datetime import datetime
 
-# Register your models here.
+from interview.models import Candidate
 
 logger = logging.getLogger(__name__)
 

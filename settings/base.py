@@ -178,7 +178,6 @@ LOGGING = {
 # ite-packages\django_python3_ldap\management\commands\ldap_sync_users.py
 # python manage.py ldap_sync_users
 # The URL of the LDAP server.
-# LDAP_AUTH_URL = "ldap://192.168.1.101:389"
 LDAP_AUTH_URL = "ldap://localhost:389"
 
 # Initiate TLS on connection.
@@ -209,8 +208,6 @@ LDAP_AUTH_CLEAN_USER_DATA = "django_python3_ldap.utils.clean_user_data"
 # The LDAP username and password of a user for querying the LDAP database for user
 # details. If None, then the authenticated user will be used for querying, and
 # the `ldap_sync_users` command will perform an anonymous query.
-# LDAP_AUTH_CONNECTION_USERNAME = "admin"
-# LDAP_AUTH_CONNECTION_PASSWORD = "admin_passwd_4_ldap"
 LDAP_AUTH_CONNECTION_USERNAME = None
 LDAP_AUTH_CONNECTION_PASSWORD = None
 

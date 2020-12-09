@@ -380,69 +380,489 @@
 
 ## 产品实战：如何在 1 天之内交付面试评估系统 
 
+### 产品背景，迭代思维与 MVP 产品规划 
+
+#### 线下流程
+
+准备简历 & 面试评估表
+
+- HR：发出面试评估表模板（Word）到一面面试官 （邮箱发出来）
+-  一面面试官：登录邮箱下载 Word 模板，每个学生拷贝一份
+- 按学生名字命名文件， 录入学生名字，学校，电话，学历等
+
+第一轮面试
+
+- 一面官：每面完一个学生，填写 Word 格式的评估表中
+- 一面官：面完一天的学生后，批量把 Word 文档 Email 到 HR
+- HR：晚上查收下载评估表，汇总结果到 Excel，通知学生复试
+- HR：同时把已经通知复试的学生信息，发送到技术二面复试官
+
+第二轮面试和 HR 面试
+
+- 二面官：查收 Email，下载 Word 格式的一面评估记录
+- 二面官：复试后追加复试的评估到 Word 记录中，邮件到 HR
+- 类似如上步骤的 HR 复试。 
+
+![1607502158288](DjangoAdvanced.assets/1607502158288.png)
+
+
+
+#### 迭代思维与 MVP 产品规划方法（OOPD）
+
+- MVP：minimum viable product， 最小可用产品
+- OOPD：Online & Offline Product Development， 线上线下相结合的产品开发方法
+  - 内裤原则：MVP 包含了产品的轮廓，核心的功能，让业务可以运转
+  - 优先线下：能够走线下的，优先走线下流程，让核心的功能先跑起来，快速做用户验证和方案验证
+  - MVP 的核心：忽略掉一切的细枝末节，做合适的假设和简化，使用最短的时间开发出来
+- 迭代思维是最强大的产品思维逻辑，互联网上唯快不破的秘诀
+- 优秀的工程师和优秀的产品经理，善于找出产品 MVP 的功能范围 
+
+
+
+#### 微信 1.0 的 MVP 迭代
+
+- 只有 3 个功能
+  - 聊天发文本消息
+  - 发送图片
+  - 自定义头像
+- 没有更改用户昵称的功能
+- 产品的目标
+  - 替换掉短信的免费聊天工具 
+
+![1607502340486](DjangoAdvanced.assets/1607502340486.png)
+
+
+
+#### 如何找出产品的 MVP 功能范围？
+
+使用这些问题来帮助确定范围
+
+- 产品的核心目标是什么? 核心用户是谁？核心的场景是什么？
+- 产品目标都需要在线上完成或者呈现吗?
+- 最小 MVP 产品要做哪些事情，能够达到业务目标?
+- 哪些功能不是在用户流程的核心路径上的？
+- 做哪些简化，和假设，能够在最短的时间交付产品，并且可以让业务流程跑起来？ 
+
+
+
+#### 用户场景和功能清单：找出必须的功能
+
+- 定义最小可用的面试评估系统
+- 哪些是可以线下人肉做的事情
+- 可以做出哪些假设来简化产品 
+
+![1607502447625](DjangoAdvanced.assets/1607502447625.png)
+
+
+
+### 数据建模 & 企业级数据库设计原则
+
+#### 数据建模
+
+- 姓名,城市,本科学校,研究生学校,手机号码,邮箱,学历,专业, 应聘职位,测评成绩,笔试成绩,生源地
+- 初试评估结果
+  - 初试-学习能力得分
+  - 初试-专业能力得分
+  - 初试-优势,初试-顾虑和不足
+  - 初试结果
+  - 初试-推荐部门
+- 1面面试官, 2面面试官
+- 复试评估结果
+  - 复试1得分,复试1-学习能力得分
+  - 复试1-专业能力得分
+  - 复试1-追求卓越得分
+  - 复试1-沟通能力得分
+  - 复试1-抗压能力得分
+  - …… 
+
+
+
+#### 企业级数据库设计十个原则
+
+3 个基础原则，4 个扩展性原则，3 个完备性原则
+
+##### 3 个基础原则
+
+- 结构清晰：表名、字段命名没有歧义，能一眼看懂
+- 唯一职责：一表一用，领域定义清晰，不存储无关信息，相关数据在一张表中
+- 主键原则：设计不带物理意义的主键；有唯一约束，确保幂等 
+
+
+
+##### 4 个扩展性原则（影响系统的性能和容量）
+
+- 长短分离：可以扩展，长文本独立存储；有合适的容量设计
+- 冷热分离：当前数据与历史数据分离
+- 索引完备：有合适索引方便查询
+- 不使用关联查询：不使用一切的 SQL Join 操作，不做 2 个表或者更多表的关联查询
+  - 示例：查询商家每一个订单的金额
+  - 一旦出现分库分表，数据表不在一个数据库，就没法join了
+  - select s.shop_name, o.id as order_id, o.total_amount from shop s, order o where s.id = o.shop_id 
+
+
+
+##### 3 个完备性原则
+
+- 完整性：保证数据的准确性和完整性，重要的内容都有记录
+- 可追溯：可追溯创建时间，修改时间，可以逻辑删除（数据最好不要物理删除，只需要进行标志逻辑删除即可）
+- 一致性原则：数据之间保持一致，尽可能避免同样的数据存储在不同表中 
+
+
+
+### 创建应用和模型，分组展示页面内容
+
+- 创建应用:
+  - python ./manage.py startapp interview
+- 注册应用
+  - 在 settings.py 中添加 interview 应用
+- 添加模型
+  - 在 interview/models.py 里面定义 Candidate 类 
+
+
+
+#### 参考资料
+
+- 使用 Model 模型
+  - https://developer.mozilla.org/zh-CN/docs/Learn/Server-side/Django/Models
+  - https://docs.djangoproject.com/en/3.1/topics/db/models/
+- 使用 Admin 管理类
+  - https://developer.mozilla.org/zh-CN/docs/learn/Server-side/Django/%E7%AE%A1%E7%90%86%E7%AB%99%E7%82%B9
+  - https://docs.djangoproject.com/en/3.1/ref/contrib/admin/
+
+
+
+#### 知识点
+
+- 应用中展示的数据表名字，使用中文显示
+
+```python
+    class Meta:
+        db_table = u'candidate'
+        verbose_name = u'应聘者'
+        verbose_name_plural = u'应聘者'
+     # Python 2 优先使用这个方法，把对象转换成字符串； 如果没有__unicode__()方法，使用 __str__()方法
+    def __unicode__(self):
+        return self.username
+
+    # Python 3 直接定义 __str__() 方法即可，系统使用这个方法来把对象转换成字符串
+    def __str__(self):
+        return self.username
+```
+
+
+
+- 自定义 数据表 的展示行为
+
+```python
+class ModelAdmin(BaseModelAdmin):
+    """Encapsulate all admin options and functionality for a given model."""
+
+    list_display = ('__str__',)  # 重写 list_display 变量的值，自定义展示列表的字段
+    list_filter = ()  # 重写 list_filter 变量的值，在列表左侧添加筛选的栏目
+    ordering = None  # 重写 ordering 变量的值，自定义列表展示的排序方式，带有优先级排序
+    exclude = None  # 重写 exclude 变量的值，排除数据表展示的 数据字段
+    search_fields = ()  # 重写 search_fields 变量的值，自定义搜索的字段项
+    fieldsets = None  # 重写 fieldsets 变量的值，自定义数据表展示的 排序块
+    # fieldsets 格式，
+    # fieldsets = (
+    #     (None, {"fields": ("userid",)}),
+    #     ("第一轮面试", {"fields": ("first_score",)}),
+    # ),
+```
 
 
 
 
 
+#### 实现候选人数据导入 
+
+- 怎么样实现一个数据导入的功能最简洁
+  - 开发一个自定义的 Web 页面，让用户能够上传 excel/csv 文件
+  - 开发一个命令行工具，读取 excel/csv，再访问数据库写入 DB
+  - 从数据库的客户端，比如 MySQL 的客户端里面导入数据
+- Django 框架已经考虑到（需要使用到命令行的场景）
+  - 使用自定义的 django management 命令来导入数据
+  - 应用下面创建 management/commands 目录，
+  - commands 目录下添加脚本，创建类，继承自 BaseCommand，实现命令行逻辑 
+- 命令行导入
+  - python manage.py import_candidates --path /path/to/your/file.csv 
+- 参考：django_python3_ldap 包
+
+![1607504312100](DjangoAdvanced.assets/1607504312100.png)
+
+
+
+#### 候选人列表筛选和查询
+
+- 能够按照名字、手机号码、学校来查询候选人信息
+- 能够按照初试结果，复试结果，HR复试结果，面试官来筛选
+- 能按照复试结果来排序 
+
+```python
+    # 查询字段
+    search_fields = (
+        "username", "phone", "email",
+        "bachelor_school",
+    )
+    # 筛选条件
+    list_filter = (
+        "city",
+        "first_result", "second_result", "hr_result",
+        "first_interviewer_user", "second_interviewer_user", "hr_interviewer_user",
+    )
+    # 排序
+    ordering = (
+        "hr_result", "second_result", "first_result",
+    )
+```
+
+![1607505794516](DjangoAdvanced.assets/1607505794516.png)
+
+
+
+### 企业域账号集成 
+
+- 什么是目录服务 Directory Service ?
+- 可以直接使用域账号登陆
+- 不用手工添加账号，维护独立密码
+- 可以集成 OpenLDAP/ActiveDirecotry
+- 以 Open LDAP 为例
+  - DN: 目录服务中的一个唯一的对象
+  - CN=David,OU=Shanghai,DC=ihopeit,DC=com 
+
+![1607506096062](DjangoAdvanced.assets/1607506096062.png)
+
+
+
+#### Open LDAP 服务搭建 
+
+- Docker 启动 OpenLDAP 服务 & phpldapadmin-service 
+
+- 安装 openldap 和 phpldapadmin
+
+  - 
+
+  ```sh
+  docker run -p 389:389 -p 636:636 --name my-openldap-container --env LDAP_ORGANISATION="ihopeit" --env LDAP_DOMAIN="ihopeit.com" --env LDAP_ADMIN_PASSWORD="admin_passwd_4_ldap" --detach osixia/openldap:1.4.0
+  
+  docker run -d --privileged -p 8080:80 --name phpldapadmin-service --env PHPLDAPADMIN_HTTPS=false --env PHPLDAPADMIN_LDAP_HOSTS=192.168.1.101 --detach osixia/phpldapadmin
+  
+  # 本地安装 phpldapadmin-service 失败
+  # docker run -p 80:80 -p 443:443 --name phpldapadmin-service2 --hostname phpldapadmin-service --link my-openldap-container:ldap-host --env PHPLDAPADMIN_LDAP_HOSTS=ldap-host --detach osixia/phpldapadmin:0.9.0
+  ```
+
+  - 参考 安装 openldap 链接：https://blog.csdn.net/qq_41916805/article/details/107206646
+  - 注意： 以上命令开放了 389 端口， 以及 8080 端口到外网
+  - 阿里云服务器，需要在安全组里面开放 389, 443 端口； 不建议 80 端口开放出来 
+
+- 登录 phpldapadmin-service ，本机 ip 为 192.168.1.119，则：http://192.168.1.119:8080/
+
+- 登录账号和密码
+
+  - loginDN: cn=admin,dc=ihopeit,dc=com 
+  - password:admin_passwd_4_ldap
+
+
+
+#### 面试官的导入、授权
+
+- 从 Open LDAP/AD 中导入面试官信息
+  - 同步账号到Django
+  - 设置面试官群组，授予群组权限：查看应聘者、修改应聘者（评估）
+  - 设置用户属性 is_staff 为true : 允许登陆 Django Admin
+  - 添加用户到群组： 使得面试官登陆后，可以填写反馈 
+- `pip install django_python3_ldap`
+- `python manage.py ldap_sync_users`
+
+
+
+### 增加自定义的数据操作菜单 （数据导出为 CSV）
+
+- 场景：需要对数据进行操作，比如导出，状态变更 （如 标记候选人为 “待面试”）
+- 定义按钮的实现逻辑（处理函数） & 在 ModelAdmin 中注册函数到 actions 
+
+```python
+# 导出应聘者信息到 csv 文件
+def export_model_as_csv(modeadmin, request, queryset):
+    pass
+
+# 将函数操作的展示变为中文
+export_model_as_csv.short_description = u"导出为CSV文件"
+
+# 导出信息到csv文件行为
+actions = [export_model_as_csv, ]
+```
+
+![1607507396288](DjangoAdvanced.assets/1607507396288.png)
+
+
+
+#### 自定义按钮： 数据导出为 CSV 
+
+![1607507433930](DjangoAdvanced.assets/1607507433930.png)
+
+
+
+### 日志记录 
+
+- 四个组件
+  - Loggers：日志记录的处理类/对象，一个 Logger 可以有多个 Handlers
+  - Handlers：对于每一条日志消息如何处理，记录到文件，控制台，还是网络
+  - Filters： 定义过滤器，用于 Logger/Handler 之上
+  -  Formmaters: 定义日志文本记录的格式
+- 四个日志级别
+  - DEBUG: 调试
+  -  INFO: 常用的系统信息
+  -  WARNING: 小的告警，不影响主要功能
+  - ERROR: 系统出现不可忽视的错误
+  -  CRITICAL: 非常严重的错误 
+
+
+
+#### 使用日志记录
+
+- 记录 debug, info, warning, error, critical 不同级别日志 
+
+![1607507603315](DjangoAdvanced.assets/1607507603315.png)
+
+
+
+#### 配置日志记录
+
+- Django 里面使用 dictConfig 格式来配置日志
+-  Dictionary 对象，至少包含如下内容:
+  - version, 目前唯一有效的值是 1
+  -  Handler, logger 是可选内容，通常需要自己定义
+  -  Filter, formatter 是可选内容，可以不用定义 
+- 简单版本
+
+```python
+# LOG
+# Simple version
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "loggers": {
+        "django_python3_ldap": {
+            "handlers": {"console"},
+            "level": "DEBUG",
+        },
+    },
+}
+```
+
+- 定义日志输出格式， 分别定义 全局日志记错， 错误日志处理， 自定义的 日志处理器 
+
+![1607507737408](DjangoAdvanced.assets/1607507737408.png)
+
+
+
+### 生产环境与开发环境配置分离
+
+- 问题
+  - 生产环境的配置与开发环境配置隔离开， 开发环境允许 Debugging
+  -  敏感信息不提交到代码库中，比如数据库连接，secret key, LDAP连接信息等
+  - 生产、开发环境使用的配置可能不一样，比如 分别使用 MySQL/Sqlite 数据库 
+
+- 推荐方案
+  - 把 settings.py 抽出来，创建3个配置文件
+    - base.py 基础配置
+    -  local.py 本地开发环境配置，允许 Debug
+    - production.py 生产环境配置， 不进到 代码库版本控制
+  - 命令行启动时指定环境配置
+    - python ./manage.py runserver 127.0.0.1:8000 --settings=settings.local
+    - 使得 manage.py 中的如下代码失效
+      - os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings.base') 
+
+![1607507878393](DjangoAdvanced.assets/1607507878393.png)
+
+
+
+### 产品细节完善
+
+- 修改站点标题
+
+- ```python
+  admin.site.site_header = _("rmliu 招聘管理系统")
+  ```
+
+- 自动保存面试官信息
+
+- ```python
+      def save_model(self, request, obj, form, change):
+          obj.last_editor = request.user.username
+          if not obj.creator:
+              obj.creator = request.user.username
+          obj.modified_date = datetime.now()
+          obj.save()
+  ```
+
+- 设置只读字段: readonly_fields = ('first_interviewer','second_interviewer',)
+
+- ```python
+      # 设置面试官为只读字段，只有 HR 才可以进行设置
+      # readonly_fields = ("first_interviewer_user", "second_interviewer_user",)
+      def get_readonly_fields(self, request, obj=None):
+          group_names = self.get_group_names(request.user)
+  
+          if "interviewer" in group_names:
+              logger.info("interviewer is in user's  group for %s", request.user.username)
+              return ("first_interviewer_user", "second_interviewer_user",)
+          return ()
+  ```
+
+- 设置字段提示 help_text ：初试分，学习能力得分，专业能力得分范围 0-5 分
+
+- ```python
+      first_score = models.DecimalField(decimal_places=1, null=True, max_digits=2, blank=True, verbose_name=u'初试分', help_text=u'1-5分，极优秀: >=4.5，优秀: 4-4.4，良好: 3.5-3.9，一般: 3-3.4，较差: <3分')
+  
+  ```
+
+- 设置列表编辑面试官，不需要进入详情页，只有 HR 才可以进行设置
+
+- ```python
+      # 设置列表编辑面试官，不需要进入详情页，只有 HR 才可以进行设置
+      # get_list_editable 不在 Django中，使用get_changelist_instance进行父类方法的覆盖
+      default_list_editable = ("first_interviewer_user", "second_interviewer_user",)
+  
+      def get_list_editable(self, request):
+          group_names = self.get_group_names(request.user)
+  
+          if request.user.is_superuser or "hr" in group_names:
+              return self.default_list_editable
+          return ()
+  
+      def get_changelist_instance(self, request):
+          self.list_editable = self.get_list_editable(request)
+          return super(CandidateAdmin, self).get_changelist_instance(request)
+  
+  ```
+
+- 生成项目依赖: pip freeze > requirements.txt 
+
+  - 任何应用程序通常需要设置安装所需并依赖一组类库来满足工作要求。通过requirements.txt可以一次性安装程序所需要和依赖的包。
+  - 1、freeze方式: `pip freeze > requirements.txt`
+  - 将当前Python环境中**所有的类库包**，其它包括那些你没有在当前项目中使用的类库，保存至requirements.txt 。至此，requirements.txt文件会出现在相应的工程中 
+  - 如果要安装requirements.txt中的类库内容，那么你可以执行：pip install -r requirements.txt
+  - 2、pipreqs方式：pipreqs ./
+  - 将当前项目**使用的类库导出**生成为 requirements.txt；
+  - 安装pipreqs: pip install pipreqs
 
 
 
 
 
+### 参考
 
-
-
-
-
-
-docker run -p 389:389 -p 636:636 --name my-openldap-container --env LDAP_ORGANISATION="ihopeit" --env LDAP_DOMAIN="ihopeit.com" --env LDAP_ADMIN_PASSWORD="admin_passwd_4_ldap" --detach osixia/openldap:1.4.0
-
-docker run -p 80:80 -p 443:443 --name phpldapadmin-service --hostname phpldapadmin-service --link my-openldap-container:ldap-host --env PHPLDAPADMIN_LDAP_HOSTS=ldap-host --detach osixia/phpldapadmin:0.9.0 
-
-
-
-安装 openldap
-
-https://blog.csdn.net/qq_41916805/article/details/107206646
-
-docker run -d --privileged -p 8080:80 --name phpldapadmin-service --env PHPLDAPADMIN_HTTPS=false --env PHPLDAPADMIN_LDAP_HOSTS=192.168.1.101 --detach osixia/phpldapadmin
-
-
-
-loginDN: cn=admin,dc=ihopeit,dc=com 
-
-password:admin_passwd_4_ldap
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+- Django document
+- https://docs.djangoproject.com/en/3.1/ref/contrib/admin/actions/
+- https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_filter
+- https://github.com/osixia/docker-openldap
 
 
 

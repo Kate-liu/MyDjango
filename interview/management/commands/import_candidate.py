@@ -8,6 +8,7 @@ from interview.models import Candidate
 # python manage.py import_candidate --path ./Tools/candidates.csv
 
 class Command(BaseCommand):
+
     help = "从一个 CSV 文件的内容中读取候选人列表，导入到数据库中"
 
     def add_arguments(self, parser):

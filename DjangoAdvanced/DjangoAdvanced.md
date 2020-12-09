@@ -396,13 +396,23 @@
 
 
 
+docker run -p 389:389 -p 636:636 --name my-openldap-container --env LDAP_ORGANISATION="ihopeit" --env LDAP_DOMAIN="ihopeit.com" --env LDAP_ADMIN_PASSWORD="admin_passwd_4_ldap" --detach osixia/openldap:1.4.0
+
+docker run -p 80:80 -p 443:443 --name phpldapadmin-service --hostname phpldapadmin-service --link my-openldap-container:ldap-host --env PHPLDAPADMIN_LDAP_HOSTS=ldap-host --detach osixia/phpldapadmin:0.9.0 
 
 
 
+安装 openldap
+
+https://blog.csdn.net/qq_41916805/article/details/107206646
+
+docker run -d --privileged -p 8080:80 --name phpldapadmin-service --env PHPLDAPADMIN_HTTPS=false --env PHPLDAPADMIN_LDAP_HOSTS=192.168.1.101 --detach osixia/phpldapadmin
 
 
 
+loginDN: cn=admin,dc=ihopeit,dc=com 
 
+password:admin_passwd_4_ldap
 
 
 

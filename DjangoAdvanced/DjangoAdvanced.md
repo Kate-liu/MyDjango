@@ -878,7 +878,9 @@ LOGGING = {
 
 
 
+使用 Bootstrap 会导致页面加载过程很慢！
 
+作者回复: 因为js，css文件默认用的国外的文件，会很慢很慢。要collectstatistics，用本地nginx提供静态资源服务，或者走cdn
 
 
 

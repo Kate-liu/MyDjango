@@ -151,6 +151,7 @@ class CandidateAdmin(admin.ModelAdmin):
     def get_fieldsets(self, request, obj=None):
         group_names = self.get_group_names(request.user)
 
+        # interviewer 有权限 and 只展示当前登录用户的数据
         if "interviewer" in group_names and obj.first_interviewer_user == request.user:
             return cf.default_field_first
         if "interviewer" in group_names and obj.second_interviewer_user == request.user:

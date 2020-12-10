@@ -874,27 +874,299 @@ LOGGING = {
 
 ## 用1天时间完善产品 - 简历投递和面试流程闭环 
 
+### 更美观的管理后台：替换Django admin的主题风格 
+
+- 安装 django-grappelli 风格
+
+  - pip install django-grappelli
+
+- settings.py 中配置
+
+  - ```python
+    INSTALLED_APPS = [
+        'grappelli',
+    ]
+    ```
+
+- urls.py 中添加 URL 映射
+
+  - ```python
+    urlpatterns = [
+        path('grappelli/', include('grappelli.urls')),
+        path('admin/', admin.site.urls),
+    ]
+    ```
+
+![1607606478427](DjangoAdvanced.assets/1607606478427.png)
 
 
 
+### 定制面试官权限 
 
-使用 Bootstrap 会导致页面加载过程很慢！
-
-作者回复: 因为js，css文件默认用的国外的文件，会很慢很慢。要collectstatistics，用本地nginx提供静态资源服务，或者走cdn
-
-
-
-
-
-
+- 数据权限
+  - 专业面试官仅能评估自己负责的环节
+- 数据集权限 (QuerySet)
+  - 专业面试官只能看到分到自己的候选人
+- 功能权限（菜单/按钮）
+  - 数据导出权限仅 HR 和超级管理员可用 
 
 
 
+#### 定制权限
+
+- **数据权限**： 
+  - 一面面试官仅填写一面反馈， 二面面试官可以填写二面反馈
+  - def get_fieldsets(self, request, obj=None):
+- **数据集权限**：
+  - 对于面试官，获取自己是一面面试官或者二面面试官的候选人集合
+  - def get_queryset(self, request):
+- 功能/菜单权限
+  - 自定义权限： 在 Model 类的 Meta 中定义自定义的 permissions
+  - 同步数据库：./manage.py makemigrations && ./manage.py migrate
+  - 在 action 上限制权限： export_model_as_csv.allowed_permissions = ('export’,)
+  - 在 Admin 上检查权限： def has_export_permission(self, request) 
 
 
 
+### 发送通知：钉钉群消息集成
+
+- 为什么不使用 Email/SMS 通知
+  - 由于邮件、短信没有限制，可以给任何人发；网络上对于 API 调用有了各种限制
+  - 阿里云封禁 25 端口
+- 为什么使用钉钉群消息
+  - 可以使用 Web Hook 直接发送，简单易用
+  - 低成本
+- 其他推荐消息方式
+  - Slack 消息
+  - 企业微信消息 
 
 
+
+#### 测试钉钉群消息
+
+- 安装钉钉聊天机器人：
+  -  pip install DingtalkChatbot
+- 自定义 interview.dingtalk.send() 方法，发送钉钉消息
+- 测试群消息 
+  - python ./manage.py shell --settings=settings.local
+  - from interview import dingtalk
+  - dingtalk.send("秋季招聘面试启动通知, 自 2020/09/01 开始秋季招聘") 
+
+
+
+#### 定制管理后台的操作按钮：通知面试官准备面试
+
+- 定义 通知面试官的方法
+
+  - def notify_interviewer(modeladmin, request, queryset)
+
+- 注册到 modeladmin中
+
+  - actions = (export_model_as_csv, notify_interviewer, ) 
+
+- 添加发送成功，页面提示消息
+
+  - ```python
+    messages.add_message(request, messages.INFO, "已经成功发送面试通知!")
+    ```
+
+
+
+### 集成 registration，允许候选人注册登陆
+
+- 允许注册：安装 registration
+
+  - pip install django-registration-redux
+  - registration 有三种对待匿名用户的方式：1）注册，邮件激活账号，2）注册，管理员授权后，激活账号，3）注册，直接就可以使用
+
+- 添加到 apps 中
+
+  - ```python
+    INSTALLED_APPS = [
+        'grappelli',
+        'registration',
+    ]
+    ```
+
+- 同步数据库
+
+- 添加 url
+
+  - ```python
+    urlpatterns = [
+        url(r"^", include("jobs.urls")),
+        path('grappelli/', include('grappelli.urls')),
+        path('admin/', admin.site.urls),
+    
+        url(r"^accounts/", include("registration.backends.simple.urls"))
+    ]
+    ```
+
+- 链接
+
+  - 注册：http://127.0.0.1:8000/accounts/register/
+  - 登录：http://127.0.0.1:8000/accounts/login/
+  - 注销：http://127.0.0.1:8000/accounts/logout/
+
+- 添加登陆，退出链接到 base.html 页面中 
+
+  - 整合职位列表与登录跳转页面
+  - base.html
+  - job.html
+  - joblist.html
+
+
+
+### 创建简历 Model （为投递简历做准备）
+
+- 创建 Model (Resume)
+- 注册 Model 到 Admin 中，设置展示字段
+- 同步数据库
+- 授予管理权限到 HR 
+
+
+
+### 职位详情页：候选人简历投递
+
+- 目标
+
+  - 注册的用户可以提交简历
+  - 简历跟当前用户关联
+  - 能够追溯到谁投递的简历
+
+- 步骤
+
+  - 定义简历创建 View (继承自通用的CreateView)
+
+  - ```python
+    class ResumeCreateView(LoginRequiredMixin, CreateView):
+        pass
+    ```
+
+  - 定义简历创建页面的表单模板
+
+  - 关联“申请职位”按钮的点击事件到简历提交页
+
+  - ```html
+    <input type="button" class="btn btn-primary" style="width:120px;" value="申请" onclick="location.href='/resume/add/?apply_position={{ job.job_name }}&city={{ job.city_name }}'"/>
+    ```
+
+  - 进一步完善， 可以带参数跳转 && 关联登陆用户到简历 
+
+
+
+### 使用 Bootstrap 来定制页面样式
+
+- 安装依赖包： 
+
+  - pip install django-bootstrap4
+
+- 添加到 apps 中: bootstrap4
+
+- 模板里面使用 bootstrap 标签 
+
+- ```django
+  {# Load the tag library#}
+  {% load bootstrap4 %}
+  
+  {# Load CSS and JavaScript #}
+  {% bootstrap_css %}
+  {% bootstrap_javascript jquery='full' %}
+  
+  {# Display django.contrib.messages as Bootstrap alerts#}
+  {% bootstrap_messages %}
+  ```
+
+- 注意
+  - 使用 Bootstrap 会导致页面加载过程很慢！
+  - 因为js，css文件默认用的国外的文件，会很慢很慢。要collectstatistics，用本地nginx提供静态资源服务，或者走cdn
+- 自定义本地静态文件
+  - 创建static，进行一类文件操作
+
+
+
+### 简历初评，安排一面面试官
+
+- 目标：
+
+  - 打通简历投递与面试流程，让简历实体 (Resume) 流转到候选人实体 (Candidate)
+
+- 添加一个数据操作菜单“进入面试流程”
+
+- 定义 enter_interview_process方法
+
+  - def enter_interview_process(modeladmin, request, queryset)
+
+  - 方法逻辑： 拷贝 Resume 对象中的属性 到 Candidate, 保存 Candidate, 消息提示成功保存
+
+  - ```python
+    def enter_interview_process(modeladmin, request, queryset):
+        pass
+    	messages.add_message(request, messages.INFO, "候选人: %s 已经成功进入面试流程" % (candidate_names))
+    ```
+
+- 注册到 modeladmin中
+
+  - ```python
+    actions = (enter_interview_process,)
+    ```
+
+
+
+### 定制列表字段，查看简历详情
+
+- 添加 ResumeDetailView 的详情页视图，使用 Django的通用视图，继承自 DetailView
+
+  - ```python
+    class ResumeDetailView(DetailView):
+        pass
+    ```
+
+- 添加 Detail 页模板：
+
+  -  resume_detail.html
+
+- 候选人列表页， 对于每一行来自简历投递的数据，添加一个“查看简历”的链接:
+
+  - ```python
+        # 列表添加跳转简历详情页列
+        def get_resume(self, obj):
+            if not obj.phone:
+                return ""
+            resumes = Resume.objects.filter(phone=obj.phone)
+            if resumes and len(resumes) > 0:
+                return mark_safe(u'<a href="/resume/%s" target="_blank"> %s </a>' % (resumes[0].id, "查看简历"))
+            return ""
+    
+        get_resume.short_description = "查看简历"
+        get_resume.allow_tags = True
+    ```
+
+- 列表页，使用 函数名称 作为 list_display 中的字段
+
+  - ```python
+        # 展示的字段
+        list_display = (
+            "username", "city", "bachelor_school",
+            "get_resume",
+            ...
+        )
+    ```
+
+- 定义一个函数， 获取 简历详情页链接 
+
+
+
+### 参考资料
+
+- 通用视图的使用:
+  - https://developer.mozilla.org/zh-CN/docs/learn/Server-side/Django/Generic_views
+  - https://docs.djangoproject.com/en/3.1/topics/class-based-views/generic-display/
+  - https://docs.djangoproject.com/en/3.1/ref/class-based-views/generic-editing/
+- 表单的使用
+  - https://docs.djangoproject.com/en/3.1/topics/forms/modelforms/
+- Registration组件
+  - https://django-registration-redux.readthedocs.io/en/latest/simple-backend.html
 
 
 

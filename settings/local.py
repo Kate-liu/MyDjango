@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from .base import *
 
+# --settings=settings.local
 DEBUG = True
 
 ALLOWED_HOSTS = ["127.0.0.1"]

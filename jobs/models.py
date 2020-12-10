@@ -60,4 +60,7 @@ class Resume(models.Model):
         verbose_name = u'简历'
         verbose_name_plural = u'简历列表'
 
+    def __str__(self):
+        return self.username
+
 

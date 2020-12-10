@@ -26,7 +26,6 @@ class ResumeAdmin(admin.ModelAdmin):
             "applicant",
             ("username", "city", "phone"),
             ("email", "apply_position", "born_address", "gender",),
-            ("picture", "attachment",),
             ("bachelor_school", "master_school"),
             ("major", "degree"),
             ('created_date', 'modified_date'),

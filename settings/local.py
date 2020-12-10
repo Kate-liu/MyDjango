@@ -16,10 +16,10 @@ LDAP_AUTH_URL = "ldap://192.168.1.119:389"
 LDAP_AUTH_CONNECTION_USERNAME = "admin"
 LDAP_AUTH_CONNECTION_PASSWORD = "admin_passwd_4_ldap"
 
-
 INSTALLED_APPS += (
     # other apps for production site
 )
 
 # 钉钉群的 WEB_HOOK， 用于发送钉钉消息
-DINGTALK_WEB_HOOK = "https://oapi.dingtalk.com/robot/send?access_token=xxxxx"
+# DINGTALK_WEB_HOOK = "https://oapi.dingtalk.com/robot/send?access_token=xxxxx"
+DINGTALK_WEB_HOOK = "https://oapi.dingtalk.com/robot/send?access_token=bfe2b51e768ea5bf952eea5d2dc39c464797bb46ab104f66b84212535122d993"

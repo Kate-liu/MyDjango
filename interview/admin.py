@@ -8,6 +8,7 @@ from datetime import datetime
 
 from interview.models import Candidate
 from interview import candidate_fieldset as cf
+from interview import dingtalk
 
 logger = logging.getLogger(__name__)
 
@@ -20,8 +21,22 @@ exportable_fields = (
 )
 
 
+# 通知一面面试官
+def notify_interviewer(modeladmin, request, queryset):
+    candidates = ""
+    interviewers = ""
+    for obj in queryset:
+        candidates = obj.username + ";" + candidates
+        interviewers = obj.first_interviewer_user.username + ";" + interviewers
+
+    dingtalk.send("候选人 %s 进入面试环节，亲爱的面试官，请做好准备: %s" % (candidates, interviewers))
+
+
+notify_interviewer.short_description = u"通知一面面试官"
+
+
 # 导出应聘者信息到 csv 文件
-def export_model_as_csv(modeadmin, request, queryset):
+def export_model_as_csv(modeladmin, request, queryset):
     response = HttpResponse(content_type="text/csv")
     field_list = exportable_fields
     response["Content-Disposition"] = "attachment; filename=recruitment-candidates-list-%s.csv" % (
@@ -59,7 +74,7 @@ class CandidateAdmin(admin.ModelAdmin):
     exclude = ("creator", "created_date", "modified_date")
 
     # 导出信息到csv文件行为
-    actions = [export_model_as_csv, ]
+    actions = [export_model_as_csv, notify_interviewer, ]
 
     # 当前用户是否有导出权限
     def has_export_permission(self, request):

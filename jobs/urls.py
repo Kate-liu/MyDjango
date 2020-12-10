@@ -14,6 +14,7 @@ urlpatterns = [
 
     # 提交简历
     path("resume/add/", views.ResumeCreateView.as_view(), name="resume-add"),
+    path("resume/<int:pk>/", views.ResumeDetailView.as_view(), name="resume-detail"),
 
     # 首页自动跳转，职位列表
     url(r"^$", views.joblist, name="name"),

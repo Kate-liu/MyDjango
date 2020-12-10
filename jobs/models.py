@@ -30,6 +30,13 @@ class Job(models.Model):
     created_date = models.DateTimeField(verbose_name="创建时间", default=datetime.now)
     modified_date = models.DateTimeField(verbose_name="修改时间", default=datetime.now)
 
+    class Meta:
+        verbose_name = u'职位'
+        verbose_name_plural = u'职位列表'
+
+    def __str__(self):
+        return self.job_name
+
 
 class Resume(models.Model):
     # Translators: 简历实体的翻译
@@ -62,5 +69,3 @@ class Resume(models.Model):
 
     def __str__(self):
         return self.username
-
-

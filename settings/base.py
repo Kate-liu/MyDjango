@@ -26,10 +26,16 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# 登录成功的跳转 URL
+LOGIN_REDIRECT_URL = "/"
+# 注册成功的跳转 URL
+SIMPLE_BACKEND_REDIRECT_URL = "/accounts/login"
+
 # Application definition
 
 INSTALLED_APPS = [
     'grappelli',
+    'registration',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

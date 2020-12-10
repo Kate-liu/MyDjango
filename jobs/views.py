@@ -11,7 +11,7 @@ from jobs.models import Cities, JobTypes
 
 def joblist(request):
     job_list = Job.objects.order_by("job_type")
-    template = loader.get_template("joblist.html")
+    # template = loader.get_template("joblist.html")
 
     # 上下文
     context = {"job_list": job_list}
@@ -21,7 +21,8 @@ def joblist(request):
         job.type_name = JobTypes[job.job_type][1]
         job.city_name = Cities[job.job_city][1]
 
-    return HttpResponse(template.render(context))
+    # return HttpResponse(template.render(context))  # 这种方式，在页面上没有 应用上下文，取不到user
+    return render(request, "joblist.html", context)
 
 
 def detail(request, job_id):

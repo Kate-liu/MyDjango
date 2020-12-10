@@ -2,7 +2,7 @@ from django.db import models
 from datetime import datetime
 from django.contrib.auth.models import User
 
-# Create your models here.
+from interview.models import DEGREE_TYPE
 
 JobTypes = [
     (0, "技术类"),
@@ -29,3 +29,35 @@ class Job(models.Model):
     creator = models.ForeignKey(User, verbose_name="创建人", on_delete=models.SET_NULL, null=True)
     created_date = models.DateTimeField(verbose_name="创建时间", default=datetime.now)
     modified_date = models.DateTimeField(verbose_name="修改时间", default=datetime.now)
+
+
+class Resume(models.Model):
+    # Translators: 简历实体的翻译
+    username = models.CharField(max_length=135, verbose_name='姓名')
+    applicant = models.ForeignKey(User, verbose_name="申请人", null=True, on_delete=models.SET_NULL)
+    city = models.CharField(max_length=135, verbose_name='城市')
+    phone = models.CharField(max_length=135, verbose_name='手机号码')
+    email = models.EmailField(max_length=135, blank=True, verbose_name='邮箱')
+    apply_position = models.CharField(max_length=135, blank=True, verbose_name=u'应聘职位')
+    born_address = models.CharField(max_length=135, blank=True, verbose_name=u'生源地')
+    gender = models.CharField(max_length=135, blank=True, verbose_name=u'性别')
+
+    # 学校与学历信息
+    bachelor_school = models.CharField(max_length=135, blank=True, verbose_name=u'本科学校')
+    master_school = models.CharField(max_length=135, blank=True, verbose_name=u'研究生学校')
+    doctor_school = models.CharField(max_length=135, blank=True, verbose_name=u'博士生学校')
+    major = models.CharField(max_length=135, blank=True, verbose_name='专业')
+    degree = models.CharField(max_length=135, choices=DEGREE_TYPE, blank=True, verbose_name=u'学历')
+    created_date = models.DateTimeField(verbose_name="创建日期", default=datetime.now)
+    modified_date = models.DateTimeField(verbose_name="修改日期", default=datetime.now)
+
+    # 候选人自我介绍，工作经历，项目经历
+    candidate_introduction = models.TextField(max_length=1024, blank=True, verbose_name=u'自我介绍')
+    work_experience = models.TextField(max_length=1024, blank=True, verbose_name=u'工作经历')
+    project_experience = models.TextField(max_length=1024, blank=True, verbose_name=u'项目经历')
+
+    class Meta:
+        verbose_name = u'简历'
+        verbose_name_plural = u'简历列表'
+
+

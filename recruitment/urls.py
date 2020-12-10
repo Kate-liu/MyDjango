@@ -22,6 +22,8 @@ urlpatterns = [
     url(r"^", include("jobs.urls")),
     path('grappelli/', include('grappelli.urls')),
     path('admin/', admin.site.urls),
+
+    url(r"^accounts/", include("registration.backends.simple.urls"))
 ]
 
 admin.site.site_header = _("rmliu 招聘管理系统")

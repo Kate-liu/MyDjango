@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db.models import Q
 from django.http import HttpResponse
 
 import logging
@@ -6,6 +7,7 @@ import csv
 from datetime import datetime
 
 from interview.models import Candidate
+from interview import candidate_fieldset as cf
 
 logger = logging.getLogger(__name__)
 
@@ -48,6 +50,8 @@ def export_model_as_csv(modeadmin, request, queryset):
 
 # 将函数操作的展示变为中文
 export_model_as_csv.short_description = u"导出为CSV文件"
+# 导出 CSV 文件，需要有 export 权限才可以展示
+export_model_as_csv.allowed_permissions = ("export",)
 
 
 class CandidateAdmin(admin.ModelAdmin):
@@ -56,6 +60,11 @@ class CandidateAdmin(admin.ModelAdmin):
 
     # 导出信息到csv文件行为
     actions = [export_model_as_csv, ]
+
+    # 当前用户是否有导出权限
+    def has_export_permission(self, request):
+        opts = self.opts
+        return request.user.has_perm("%s.%s" % (opts.app_label, "export"))
 
     # 展示的字段
     list_display = (
@@ -82,37 +91,6 @@ class CandidateAdmin(admin.ModelAdmin):
     search_fields = (
         "username", "phone", "email",
         "bachelor_school",
-    )
-
-    # 字段集合，分块展示
-    fieldsets = (
-        (None, {"fields": (
-            "userid",
-            ("username", "city", "phone"),
-            ("email", "apply_position", "born_address"),
-            ("gender", "candidate_remark", "bachelor_school"),
-            ("master_school", "doctor_school"),
-            ("major", "degree"),
-            ("test_score_of_general_ability", "paper_score"),
-            "last_editor",
-        )}),
-        ("第一轮面试", {"fields": (
-            "first_score",
-            ("first_learning_ability", "first_professional_competency"),
-            "first_advantage", "first_disadvantage", "first_result",
-            "first_recommend_position", "first_interviewer_user", "first_remark",)}),
-        ("第二轮面试(专业复试)", {"fields": (
-            "second_score",
-            ("second_learning_ability", "second_professional_competency"),
-            ("second_pursue_of_excellence", "second_communication_ability", "second_pressure_score"),
-            "second_advantage", "second_disadvantage", "second_result", "second_recommend_position",
-            "second_interviewer_user", "second_remark",)}),
-        ("HR复试记录", {"fields": (
-            "hr_score",
-            ("hr_responsibility", "hr_communication_ability"),
-            ("hr_potential", "hr_stability"),
-            "hr_advantage", "hr_disadvantage",
-            "hr_result", "hr_interviewer_user", "hr_remark",)}),
     )
 
     # 设置列表编辑面试官，不需要进入详情页，只有 HR 才可以进行设置
@@ -145,6 +123,28 @@ class CandidateAdmin(admin.ModelAdmin):
         for g in user.groups.all():
             group_names.append(g.name)
         return group_names
+
+    # 一面面试官仅填写一面反馈，二面面试官可以填写二面反馈
+    def get_fieldsets(self, request, obj=None):
+        group_names = self.get_group_names(request.user)
+
+        if "interviewer" in group_names and obj.first_interviewer_user == request.user:
+            return cf.default_field_first
+        if "interviewer" in group_names and obj.second_interviewer_user == request.user:
+            return cf.default_field_second
+        return cf.default_field
+
+    # 对于非管理员，非HR，获取自己是一面面试官或者二面面试官的候选人集合
+    def get_queryset(self, request):
+        qs = super(CandidateAdmin, self).get_queryset(request)
+
+        group_names = self.get_group_names(request.user)
+        if request.user.is_superuser or "hr" in group_names:
+            return qs
+        # 使用 Q 表达式做复杂的 and 与 or 查询
+        return Candidate.objects.filter(
+            Q(first_interviewer_user=request.user) | Q(second_interviewer_user=request.user)
+        )
 
     def save_model(self, request, obj, form, change):
         obj.last_editor = request.user.username

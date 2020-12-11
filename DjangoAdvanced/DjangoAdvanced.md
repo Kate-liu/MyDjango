@@ -1188,6 +1188,7 @@ LOGGING = {
 - 安装kite插件，进行代码自动补全
 - mkdir locale
 - django-admin makemessages -l zh_HANS -l en 
+- django-admin compilemessages 
 
 
 

@@ -94,7 +94,7 @@ class CandidateAdmin(admin.ModelAdmin):
         "get_resume",
         "first_score", "first_result", "first_interviewer_user",
         "second_result", "second_interviewer_user",
-        "hr_score", "hr_result",
+        "hr_result", "hr_interviewer_user",
         "last_editor",
     )
 

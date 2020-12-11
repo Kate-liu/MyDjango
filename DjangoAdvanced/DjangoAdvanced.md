@@ -1240,6 +1240,58 @@ LOCALE_PATHS = (
 
 
 
+### Sentry 集成 
+
+- download：https://github.com/getsentry/onpremise/releases/tag/20.8.0
+
+- unzip
+
+- cd  onpremise-20.8.0
+
+- docker --help
+
+- ./install.sh
+
+- ```sh
+  $ ./install.sh
+  Checking minimum requirements...
+  
+  Creating volumes for persistent storage...
+  Created sentry-data.
+  Created sentry-postgres.
+  Created sentry-redis.
+  Created sentry-zookeeper.
+  Created sentry-kafka.
+  Created sentry-clickhouse.
+  Created sentry-symbolicator.
+  
+  Creating sentry/sentry.conf.py...
+  Creating sentry/config.yml...
+  Creating sentry/requirements.txt...
+  Creating symbolicator/config.yml...
+  Creating relay/config.yml...
+  
+  Generating secret key...
+  Secret key written to sentry/config.yml
+  
+  Fetching and updating Docker images...
+  
+  ```
+
+- docker-compose up -d
+
+- docker ps |  less
+
+- 创建账号和密码
+
+- http://recruit.ihopeit.com:9000/organization/sentry/projects
+
+
+
+
+
+
+
 
 
 

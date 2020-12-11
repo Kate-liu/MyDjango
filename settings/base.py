@@ -51,7 +51,7 @@ INSTALLED_APPS = [
 
 # 从上到下，依次执行
 MIDDLEWARE = [
-    'interview.performance.performance_logger_middleware',  # 自定义统计耗时中间件
+    'interview.performance.PerformanceAndExceptionLoggerMiddleware',  # 自定义性能与异常上报中间件
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',  # 多语言中间件

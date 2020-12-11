@@ -1081,6 +1081,7 @@ LOGGING = {
   - 使用 Bootstrap 会导致页面加载过程很慢！
   - 因为js，css文件默认用的国外的文件，会很慢很慢。要collectstatistics，用本地nginx提供静态资源服务，或者走cdn
 - 自定义本地静态文件
+  
   - 创建static，进行一类文件操作
 
 
@@ -1170,31 +1171,67 @@ LOGGING = {
 
 
 
+## 日常开发中常见的复杂场景：Django进阶开发实战 
+
+### 遗留系统集成：为已有数据库生成管理后台 
 
 
 
 
 
+### Django 的中间件（Middleware） 
 
 
 
+### Django 中支持多语言 
+
+- 安装kite插件，进行代码自动补全
+- mkdir locale
+- django-admin makemessages -l zh_HANS -l en 
 
 
 
+错误：CommandError: Can't find msguniq. Make sure you have GNU gettext tools 0.15 or newer installed.
 
+link: https://stackoverflow.com/questions/27220052/django-i18n-make-sure-you-have-gnu-gettext-tools/39406251
 
+Just below solution solved my problem. I am using Windows 10 64bit
 
+1- Go to this link : https://mlocati.github.io/articles/gettext-iconv-windows.html
 
+2- Download 32 or 64 bit **shared** and **static** windows installation files
 
+3-Install both of files
 
+4-Restart your computer
 
+link：https://stackoverflow.com/questions/38806553/how-to-install-gnu-gettext-0-15-on-windows-so-i-can-produce-po-mo-files-in
 
+The easiest way is to download the [precompiled binary installer](https://mlocati.github.io/articles/gettext-iconv-windows.html). Download the "static" flavor of your Operating System (32bit or 64bit) and simple run the installer.
 
+*Update the system PATH:*
 
+```
+Control Panel > System > Advanced > Environment Variables
+```
 
+In the System variables list, click Path, click Edit and then New. Add `C:\Program Files\gettext-iconv\bin` value.
 
+To check if it's working, go to cmd, navigate to your project folder and type
 
+```
+"manage makemessages -l de".
+```
 
+You may have to configure the path to store translations. Create a dir named "locale" in your project dir and point to it at settings.py
+
+Also make sure to set the local path in settings.py file:
+
+```py
+LOCALE_PATHS = (
+    BASE_DIR + 'locale/', 
+)
+```
 
 
 

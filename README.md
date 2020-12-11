@@ -7,7 +7,10 @@ This is my Django study Record.
 - python manage.py shell --settings=settings.local
 
 
-
+## Tools
+- 代码自动补全插件
+    - kite
+    - 官网：https://www.kite.com/
 
 
 

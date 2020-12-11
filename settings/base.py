@@ -48,7 +48,9 @@ INSTALLED_APPS = [
     'interview',
 ]
 
+# 从上到下，依次执行
 MIDDLEWARE = [
+    'interview.performance.performance_logger_middleware',  # 自定义统计耗时中间件
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -167,6 +169,12 @@ LOGGING = {
             'formatter': 'simple',
             'filename': os.path.join(os.path.dirname(BASE_DIR), 'recruitment.admin.log'),
         },
+        'performance': {
+            # 'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'formatter': 'simple',
+            'filename': os.path.join(os.path.dirname(BASE_DIR), 'recruitment.performance.log'),
+        },
     },
 
     'root': {
@@ -178,6 +186,11 @@ LOGGING = {
         "django_python3_ldap": {
             "handlers": ["console", "file"],
             "level": "DEBUG",
+        },
+        "interview.performance": {
+            "handlers": ["console", "performance"],
+            "level": "INFO",
+            "propagate": False,
         },
     },
 }

@@ -47,3 +47,4 @@ dump.rdb
 # settings/local.py
 /identifier.sqlite
 /venv/
+/Environment

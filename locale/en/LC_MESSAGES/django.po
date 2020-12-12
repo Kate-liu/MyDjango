@@ -167,14 +167,17 @@ msgid ""
 "            终于等到你 %(user_name)s, 期待加入我们，用技术去探索一个新世界\n"
 "        "
 msgstr ""
+"\n"
+"            Wait for you %(user_name)s, Look forward to joining us and exploring a new world with technology\n"
+"        "
 
 #: .\jobs\templates\base.html:66
 msgid "欢迎你，期待加入我们，登陆后可以提交简历."
-msgstr ""
+msgstr "Welcome and look forward to joining us. You can submit your resume after logging in."
 
 #: .\recruitment\urls.py:29
 msgid "rmliu 招聘管理系统"
-msgstr ""
+msgstr "rmliu Recruitment management System"
 
 #: .\venv\Lib\site-packages\bootstrap4\components.py:17
 #: .\venv\Lib\site-packages\bootstrap4\templates\bootstrap4\form_errors.html:3

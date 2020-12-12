@@ -37,7 +37,6 @@ class Job(models.Model):
         verbose_name = _("职位")
         verbose_name_plural = _("职位列表")
 
-
     def __str__(self):
         return self.job_name
 

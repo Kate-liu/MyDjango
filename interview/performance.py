@@ -40,6 +40,7 @@ class PerformanceAndExceptionLoggerMiddleware:
         duration = time.time() - start_time
         response["X-Page-Duration-ms"] = int(duration * 1000)
         logger.info("duration:%s url:%s parameters:%s", duration, request.path, request.GET.dict())
+
         if duration > 300:
             capture_message(
                 "slow request for url: %s with duration:%s" % (request.build_absolute_uri(), duration)

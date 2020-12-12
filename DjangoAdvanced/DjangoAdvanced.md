@@ -1175,26 +1175,131 @@ LOGGING = {
 
 ### 遗留系统集成：为已有数据库生成管理后台 
 
+- 问题
+  - 已经有内部系统在运行了，缺少管理功能，希望能有一个权利后台。
+  - 比如 人事系统，CRM，ERP 的产品，缺少部分数据的维护功能
+- 诉求
+  - 3分钟生成一个管理后台；
+  - 可以灵活定制页面；
+  - 不影响正在运行的业务系统。 
 
+- 创建项目: 
+  - $ django-admin startproject empmanager
+- 编辑 settings.py 中的数据库配置,
+  - vim ~/settings.py
+  - DATABASES = {
+    'default’: {
+    'ENGINE': 'django.db.backends.mysql', 'NAME': 'mydatabase',
+    'USER': 'mydatabaseuser', 'PASSWORD': 'mypassword', 'HOST': '127.0.0.1', 'PORT':
+    '5432',
+    }
+    }
+- 生成 model 类: 
+  - ./manage.py inspectdb > models.py 
+  - 基于数据库反推数据库models
+  - 需要将不需要的数据表移除，还需要进行自定义的models修改
 
 
 
 ### Django 的中间件（Middleware） 
 
+- 什么是中间件 Middleware ?
+  - 注入在 Django 请求/响应 处理流程中的钩子框架，能对 request/response 作处理
+- 广泛的使用场景
+  - 登录认证，安全拦截
+  - 日志记录，性能上报
+  - 缓存处理，监控告警….
+- 自定义中间件的 2 种方法
+  - 使用函数实现
+  - 使用类实现 
+
+
+
+#### Django的中间件（Middleware）: 函数实现 
+
+![1607741163820](DjangoAdvanced.assets/1607741163820.png)
+
+
+
+#### Django的中间件（Middleware）: 类实现
+
+- Django 提供的 get_response 方法：
+- 可能是一个真实的视图，也可能是请求处理链中的下一个中间件 
+
+![1607741198208](DjangoAdvanced.assets/1607741198208.png)
+
+
+
+#### 创建一个请求日志，性能日志记录中间件
+
+- 定义实现中间件: def performance_logger_middleware(get_response)
+-  记录请求 URL， 参数， 响应时间
+- 注册 middleware 到 settings 中
+- 配置 日志文件路径 
+
+```python
+def performance_logger_middleware(get_response):
+    def middleware(request):
+        start_time = time.time()
+
+        response = get_response(request)
+
+        duration = time.time() - start_time
+        response["X-page-Duration-ms"] = int(duration * 1000)
+
+        logger.info("%s %s %s", duration, request.path, request.GET.dict())
+        return response
+
+    return middleware
+```
+
+
+
+#### 性能记录
+
+- 输出到 Response Header 里面的 X-Page-Ducration-ms 
+
+![1607741552890](DjangoAdvanced.assets/1607741552890.png)
+
+
+
 
 
 ### Django 中支持多语言 
 
-- 安装kite插件，进行代码自动补全
+
+
+#### 使用多语言步骤
+
+- 代码中使用 gettext, gettext_lazy 获取多语言资源对应的文本内容
+- 生成多语言资源文件
+- 翻译多语言内容
+- 生成二进制多语言资源文件 
+
+![1607741653409](DjangoAdvanced.assets/1607741653409.png)
+
+
+
+#### 使用多语言操作
+
+- Model，以及 Django 的 python 代码里面使用多语言
 - mkdir locale
-- django-admin makemessages -l zh_HANS -l en 
-- django-admin compilemessages 
+- 安装kite插件，进行代码自动补全
+- 生成文本格式的多语言资源文件 .po 文件
+  - django-admin makemessages -l zh_HANS -l en
+- 翻译 .po 文件中的内容到不同语言
+- 编译生成可以高效使用的二进制文件 (.mo) 文件
+  -  django-admin compilemessages 
 
 
+
+#### gettext错误
 
 错误：CommandError: Can't find msguniq. Make sure you have GNU gettext tools 0.15 or newer installed.
 
 link: https://stackoverflow.com/questions/27220052/django-i18n-make-sure-you-have-gnu-gettext-tools/39406251
+
+link：https://stackoverflow.com/questions/38806553/how-to-install-gnu-gettext-0-15-on-windows-so-i-can-produce-po-mo-files-in
 
 Just below solution solved my problem. I am using Windows 10 64bit
 
@@ -1206,34 +1311,6 @@ Just below solution solved my problem. I am using Windows 10 64bit
 
 4-Restart your computer
 
-link：https://stackoverflow.com/questions/38806553/how-to-install-gnu-gettext-0-15-on-windows-so-i-can-produce-po-mo-files-in
-
-The easiest way is to download the [precompiled binary installer](https://mlocati.github.io/articles/gettext-iconv-windows.html). Download the "static" flavor of your Operating System (32bit or 64bit) and simple run the installer.
-
-*Update the system PATH:*
-
-```
-Control Panel > System > Advanced > Environment Variables
-```
-
-In the System variables list, click Path, click Edit and then New. Add `C:\Program Files\gettext-iconv\bin` value.
-
-To check if it's working, go to cmd, navigate to your project folder and type
-
-```
-"manage makemessages -l de".
-```
-
-You may have to configure the path to store translations. Create a dir named "locale" in your project dir and point to it at settings.py
-
-Also make sure to set the local path in settings.py file:
-
-```py
-LOCALE_PATHS = (
-    BASE_DIR + 'locale/', 
-)
-```
-
 
 
 
@@ -1242,15 +1319,21 @@ LOCALE_PATHS = (
 
 ### Sentry 集成 
 
-- download：https://github.com/getsentry/onpremise/releases/tag/20.8.0
+- 两种方法安装 Sentry ：
 
-- unzip
+  - 使用 Docker 官方服务（量大需要付费，使用方便）；
+  - 自己搭建 服务（从源码安装，或者使用docker 搭建服务）；
 
-- cd  onpremise-20.8.0
+- 使用 Docker 来安装 sentry, 使用 release 版本 
+  - download：https://github.com/getsentry/onpremise/releases/tag/20.8.0
 
-- docker --help
+  - unzip
 
-- ./install.sh
+  -  cd  onpremise-20.8.0
+
+  -  docker --help
+
+  -  ./install.sh
 
 - ```sh
   $ ./install.sh
@@ -1258,39 +1341,52 @@ LOCALE_PATHS = (
   
   Creating volumes for persistent storage...
   Created sentry-data.
-  Created sentry-postgres.
-  Created sentry-redis.
-  Created sentry-zookeeper.
-  Created sentry-kafka.
-  Created sentry-clickhouse.
-  Created sentry-symbolicator.
-  
-  Creating sentry/sentry.conf.py...
-  Creating sentry/config.yml...
-  Creating sentry/requirements.txt...
-  Creating symbolicator/config.yml...
-  Creating relay/config.yml...
-  
-  Generating secret key...
-  Secret key written to sentry/config.yml
+  ...
   
   Fetching and updating Docker images...
   
   ```
 
-- docker-compose up -d
+  - docker-compose up -d
 
-- docker ps |  less
+  -  docker-compose stop
 
-- 创建账号和密码
+  -  docker ps |  less
 
-- http://recruit.ihopeit.com:9000/organization/sentry/projects
+  - 创建账号和密码(本地安装失败，后续待解决！)
+
+  -  http://recruit.ihopeit.com:9000/organization/sentry/projects
+
+- Django 配置集成 sentry ， 自动上报未捕获异常， 错误日志 
+
+
+
+#### Sentry 集成 -日志上报
+
+![1607742413668](DjangoAdvanced.assets/1607742413668.png)
+
+
+
+#### Sentry 集成 -性能监控
+
+- 95线，50线
+
+![1607742462995](DjangoAdvanced.assets/1607742462995.png)
 
 
 
 
 
+#### 异常上报 & 异常发送钉钉群 
 
+- 使用中间件捕获异常上报 
+- 重写异常捕获类
+
+![1607742903968](DjangoAdvanced.assets/1607742903968.png)
+
+
+
+### Django 的安全：如何防止 XSS 跨站脚本攻击 
 
 
 

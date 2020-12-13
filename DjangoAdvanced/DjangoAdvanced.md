@@ -1417,11 +1417,15 @@ Just below solution solved my problem. I am using Windows 10 64bit
 
 ### Django Rest Framework 开放 API 
 
+- https://www.django-rest-framework.org/#installation
+- 进行配置
+- 浏览器访问：http://127.0.0.1:8000/api/
+- curl http://127.0.0.1:8000/api/jobs/
+- 指定用户名密码的curl： curl -u admin:admin http://127.0.0.1:8000/api/jobs/
 
 
 
-
-
+### Django 中使用缓存 
 
 
 

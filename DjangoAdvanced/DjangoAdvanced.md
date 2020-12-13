@@ -1427,13 +1427,16 @@ Just below solution solved my problem. I am using Windows 10 64bit
 
 ### Django 中使用缓存 
 
+- Django-redis官网文档：https://django-redis-chs.readthedocs.io/zh_CN/latest/
+- redis 安装教程：https://www.runoob.com/redis/redis-install.html
+- redis-server.exe redis.windows.conf
+- redis-cli.exe -h 127.0.0.1 -p 6379
 
 
 
 
 
-
-
+### Django 与 Celery 集成：异步任务
 
 
 

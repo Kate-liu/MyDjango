@@ -27,6 +27,21 @@ INSTALLED_APPS += (
 # DINGTALK_WEB_HOOK = "https://oapi.dingtalk.com/robot/send?access_token=xxxxx"
 DINGTALK_WEB_HOOK = "https://oapi.dingtalk.com/robot/send?access_token=bfe2b51e768ea5bf952eea5d2dc39c464797bb46ab104f66b84212535122d993"
 
+# 集成redis缓存
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            # "PASSWORD": "mysecret",
+            "SOCKET_CONNECT_TIMEOUT": 5,  # in seconds
+            "SOCKET_TIMEOUT": 5,  # r/w timeout in seconds
+        }
+    }
+}
+
+# 集成 sentry sdk
 sentry_sdk.init(
     dsn="http://6bb38054303b4cc38d7c2e2c4e197cee@127.0.0.1:9000/3",
     integrations=[DjangoIntegration()],

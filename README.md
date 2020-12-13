@@ -13,8 +13,8 @@ This is my Django study Record.
     - 官网：https://www.kite.com/
 
 - requirements.txt
-    - pip install -r requirements.txt
-    - pip freeze>requirements.txt 
+    - 导入：pip install -r requirements.txt
+    - 导出：pip freeze>requirements.txt 
 
 
 

@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
 from .base import *
 
 # --settings=settings.local
@@ -23,3 +26,17 @@ INSTALLED_APPS += (
 # 钉钉群的 WEB_HOOK， 用于发送钉钉消息
 # DINGTALK_WEB_HOOK = "https://oapi.dingtalk.com/robot/send?access_token=xxxxx"
 DINGTALK_WEB_HOOK = "https://oapi.dingtalk.com/robot/send?access_token=bfe2b51e768ea5bf952eea5d2dc39c464797bb46ab104f66b84212535122d993"
+
+sentry_sdk.init(
+    dsn="http://6bb38054303b4cc38d7c2e2c4e197cee@127.0.0.1:9000/3",
+    integrations=[DjangoIntegration()],
+
+    # performance tracing sample rate
+    # 采样率，生产环境访问量过大时，建议调小（不用每一个URL请求都记录性能）
+    # 所有请求 100% 进行性能采样
+    traces_sample_rate=1.0,
+
+    # If you wish to associate users to errors (assuming you are using
+    # django.contrib.auth) you may enable sending PII data.
+    send_default_pii=True
+)

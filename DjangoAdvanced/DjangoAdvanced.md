@@ -1348,16 +1348,16 @@ Just below solution solved my problem. I am using Windows 10 64bit
   ```
 
   - docker-compose up -d
-
-  -  docker-compose stop
-
-  -  docker ps |  less
-
-  - 创建账号和密码(本地安装失败，后续待解决！)
-
-  -  http://recruit.ihopeit.com:9000/organization/sentry/projects
+- docker-compose stop
+  - docker ps |  less
+- 创建账号和密码
+  -  http://127.0.0.1:9000/organizations/sentry/issues/
+-  Settings >>> Create teams
+  -  Settings >>> Create projects
 
 - Django 配置集成 sentry ， 自动上报未捕获异常， 错误日志 
+
+  - 一切都准备了，但是还是无法在 sentry 中看到记录
 
 
 

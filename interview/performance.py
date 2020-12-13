@@ -41,6 +41,7 @@ class PerformanceAndExceptionLoggerMiddleware:
         response["X-Page-Duration-ms"] = int(duration * 1000)
         logger.info("duration:%s url:%s parameters:%s", duration, request.path, request.GET.dict())
 
+        # 上报 文本信息到 Sentry
         if duration > 300:
             capture_message(
                 "slow request for url: %s with duration:%s" % (request.build_absolute_uri(), duration)
@@ -67,4 +68,5 @@ class PerformanceAndExceptionLoggerMiddleware:
             # capture exception to sentry:
             capture_exception(exception)
 
+        # 发生异常，页面只展示下面的内容，而不是整个错误堆栈
         return HttpResponse("Error processing the request, please contact the system administrator.", status=500)

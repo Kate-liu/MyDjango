@@ -2,6 +2,7 @@
 
 from django.conf.urls import url
 from django.urls import path
+from django.conf import settings
 
 from jobs import views
 
@@ -24,6 +25,14 @@ urlpatterns = [
     # sentry, creating a route that triggers an error
     path('sentry-debug/', trigger_error),
 
+
+    path('create_hr_user/', views.create_hr_user, name="create_hr_user"),
+
     # 首页自动跳转，职位列表
     url(r"^$", views.joblist, name="name"),
 ]
+
+if settings.DEBUG:
+    urlpatterns += [
+        url(r"^detail_resume/(?P<resume_id>\d+)/$", views.detail_resume, name="detail_resume"),
+    ]

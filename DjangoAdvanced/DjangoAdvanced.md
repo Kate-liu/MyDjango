@@ -1349,12 +1349,15 @@ Just below solution solved my problem. I am using Windows 10 64bit
 
   - docker-compose up -d
 - docker-compose stop
+  
   - docker ps |  less
 - 创建账号和密码
+  
   -  http://127.0.0.1:9000/organizations/sentry/issues/
 -  Settings >>> Create teams
-  -  Settings >>> Create projects
-
+  
+-  Settings >>> Create projects
+  
 - Django 配置集成 sentry ， 自动上报未捕获异常， 错误日志 
 
   - 一切都准备了，但是还是无法在 sentry 中看到记录
@@ -1387,6 +1390,182 @@ Just below solution solved my problem. I am using Windows 10 64bit
 
 
 ### Django 的安全：如何防止 XSS 跨站脚本攻击 
+
+
+
+
+
+
+
+
+
+### Django 的安全：CSRF 跨站请求伪造 
+
+- 本地启动一个 http 服务
+- 创建一个文件夹，创建一个http文件
+- 进入文件夹，执行命令：python -m http.server 7000
+
+
+
+
+
+### Django的安全：SQL注入攻击 
+
+
+
+
+
+### Django Rest Framework 开放 API 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

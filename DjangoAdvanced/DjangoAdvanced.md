@@ -1438,11 +1438,24 @@ Just below solution solved my problem. I am using Windows 10 64bit
 
 ### Django 与 Celery 集成：异步任务
 
+- Celery 官网：https://docs.celeryproject.org/en/stable/getting-started/introduction.html
+- pip install Celery
+- pip install "celery[redis,auth,msgpack]"
+- 创建测试示例：https://docs.celeryproject.org/en/stable/getting-started/first-steps-with-celery.html#id8
+- celery -A tasks worker --loglevel=INFO
+- celery --app tasks worker --loglevel=INFO
 
 
 
 
 
+
+
+错误信息：Error: Invalid value for '-A' / '--app':
+Unable to load celery application.
+The module tasks was not found.
+
+link:https://github.com/celery/celery/pull/6383
 
 
 

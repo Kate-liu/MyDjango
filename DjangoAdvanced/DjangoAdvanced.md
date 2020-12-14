@@ -1491,7 +1491,14 @@ link:https://blog.csdn.net/weixin_44177600/article/details/109037630
 #### Django 与 Celery 集成：异步任务 
 
 - https://docs.celeryproject.org/en/v4.4.7/django/first-steps-with-django.html
-- 
+- 启动celery：
+- 失败：DJANGO_SETTINGS_MODULE=settings.local celery --app recruitment worker -l info
+- 成功：celery --app recruitment worker --pool=solo -l info
+- 失败：celery --app recruitment worker -l info DJANGO_SETTINGS_MODULE=settings.local 
+- 启动应用：
+- python manage.py runserver 0.0.0.0:8000 --settings=settings.local
+- 启动监控，flower：
+- celery -A recruitment flower --broker=redis://localhost:6379/0
 
 
 

@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'jobs',
     'interview',
     'rest_framework',
+    'django_celery_beat',
 ]
 
 # 从上到下，依次执行

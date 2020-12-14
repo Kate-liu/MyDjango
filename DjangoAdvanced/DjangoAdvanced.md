@@ -1495,6 +1495,8 @@ link:https://blog.csdn.net/weixin_44177600/article/details/109037630
 - 失败：DJANGO_SETTINGS_MODULE=settings.local celery --app recruitment worker -l info
 - 成功：celery --app recruitment worker --pool=solo -l info
 - 失败：celery --app recruitment worker -l info DJANGO_SETTINGS_MODULE=settings.local 
+- set DJANGO_SETTINGS_MODULE=settings.local
+- celery --app recruitment worker --pool=solo -l info
 - 启动应用：
 - python manage.py runserver 0.0.0.0:8000 --settings=settings.local
 - 启动监控，flower：
@@ -1504,9 +1506,15 @@ link:https://blog.csdn.net/weixin_44177600/article/details/109037630
 
 
 
+#### Django 与 Celery 集成：定时任务 
 
-
-
+- 安装 beat: pip install django-celery-beat 
+- python manage.py makemigrations
+- python manage.py migrate
+- 启动 beat：
+- set DJANGO_SETTINGS_MODULE=settings.local
+- celery -A recruitment beat --scheduler django_celery_beat.schedulers:DatabaseScheduler
+- 
 
 
 

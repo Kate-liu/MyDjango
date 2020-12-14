@@ -1439,11 +1439,16 @@ Just below solution solved my problem. I am using Windows 10 64bit
 ### Django 与 Celery 集成：异步任务
 
 - Celery 官网：https://docs.celeryproject.org/en/stable/getting-started/introduction.html
-- pip install Celery
+- pip install Celery==4.4.7
 - pip install "celery[redis,auth,msgpack]"
 - 创建测试示例：https://docs.celeryproject.org/en/stable/getting-started/first-steps-with-celery.html#id8
-- celery -A tasks worker --loglevel=INFO
-- celery --app tasks worker --loglevel=INFO
+- celery -A tasks worker --pool=solo --loglevel=INFO
+- celery --app tasks worker --pool=solo --loglevel=INFO
+- 创建 run_task.py
+- python run_task.py
+- 监控：https://docs.celeryproject.org/en/stable/userguide/monitoring.html
+- pip install flower
+- celery -A tasks flower --broker=redis://@localhost:6379/0
 
 
 
@@ -1461,17 +1466,32 @@ link:https://github.com/celery/celery/pull/6383
 
 
 
+错误信息：ImportError: cannot import name 'Command' from 'celery.bin.base'
+
+解决办法：回退版本，pip install celery==4.4.7
+
+link:https://github.com/mher/flower/issues/1029
+
+link2:https://stackoverflow.com/questions/64180054/importerror-cannot-import-name-command-from-celery-bin-base
 
 
 
 
 
+错误：ValueError: not enough values to unpack (expected 3, got 0)
+
+解决办法：启动celery的时候添加参数 --pool=solo
+
+link:https://blog.csdn.net/weixin_44177600/article/details/109037630
 
 
 
 
 
+#### Django 与 Celery 集成：异步任务 
 
+- https://docs.celeryproject.org/en/v4.4.7/django/first-steps-with-django.html
+- 
 
 
 

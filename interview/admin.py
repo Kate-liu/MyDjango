@@ -10,7 +10,8 @@ from django.utils.safestring import mark_safe
 
 from interview.models import Candidate
 from interview import candidate_fieldset as cf
-from interview import dingtalk
+# from interview import dingtalk
+from interview import tasks
 from jobs.models import Resume
 
 logger = logging.getLogger(__name__)
@@ -33,7 +34,10 @@ def notify_interviewer(modeladmin, request, queryset):
         interviewers = obj.first_interviewer_user.username + ";" + interviewers
 
     # 钉钉发送消息
-    dingtalk.send("候选人 %s 进入面试环节，亲爱的面试官，请做好准备: %s" % (candidates, interviewers))
+    # dingtalk.send("候选人 %s 进入面试环节，亲爱的面试官，请做好准备: %s" % (candidates, interviewers))
+    # 使用celery 进行异步 钉钉发送消息
+    tasks.send_dingtalk_message.delay("候选人 %s 进入面试环节，亲爱的面试官，请做好准备: %s" % (candidates, interviewers))
+
     # 页面提示通知成功信息
     messages.add_message(request, messages.INFO, "已经成功发送面试通知!")
 

@@ -15,6 +15,7 @@ from django.utils.translation import gettext_lazy as _
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+LOG_DIR = os.path.join(BASE_DIR, 'logs')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -190,13 +191,15 @@ LOGGING = {
             # 'level': 'INFO',
             'class': 'logging.FileHandler',
             'formatter': 'simple',
-            'filename': os.path.join(os.path.dirname(BASE_DIR), 'recruitment.admin.log'),
+            # 'filename': os.path.join(os.path.dirname(BASE_DIR), 'recruitment.admin.log'),
+            'filename': os.path.join(LOG_DIR, 'recruitment.admin.log'),
         },
         'performance': {
             # 'level': 'INFO',
             'class': 'logging.FileHandler',
             'formatter': 'simple',
-            'filename': os.path.join(os.path.dirname(BASE_DIR), 'recruitment.performance.log'),
+            # 'filename': os.path.join(os.path.dirname(BASE_DIR), 'recruitment.performance.log'),
+            'filename': os.path.join(LOG_DIR, 'recruitment.performance.log'),
         },
     },
 

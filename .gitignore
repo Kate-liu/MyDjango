@@ -48,3 +48,4 @@ dump.rdb
 /identifier.sqlite
 /venv/
 /Environment
+logs/*.log

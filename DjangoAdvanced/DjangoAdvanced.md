@@ -1514,11 +1514,31 @@ link:https://blog.csdn.net/weixin_44177600/article/details/109037630
 - 启动 beat：
 - set DJANGO_SETTINGS_MODULE=settings.local
 - celery -A recruitment beat --scheduler django_celery_beat.schedulers:DatabaseScheduler
-- 
+- 测试定时任务：
+  - 启动应用
+  - 启动redis
+  - 启动celery
+  - 启动flower监控
+  - 启动beat定时任务
 
 
 
 
+
+
+
+错误：django.core.exceptions.AppRegistryNotReady: Apps aren't loaded yet.
+
+解决办法：
+
+添加下面的内容，到celery。
+
+```python
+import django
+django.setup()
+```
+
+link：https://blog.csdn.net/aoerqileng/article/details/79197243
 
 
 

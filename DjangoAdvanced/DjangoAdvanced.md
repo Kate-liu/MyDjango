@@ -1391,7 +1391,12 @@ Just below solution solved my problem. I am using Windows 10 64bit
 
 ### Django 的安全：如何防止 XSS 跨站脚本攻击 
 
+- 恶意攻击者将代码通过网站注入到其他用户浏览器中的攻击方式。
+  - 攻击者会把恶意 JavaScript 代码作为普通数据放入到网站数据库中；
+  - 其他用户在获取和展示数据的过程中，运行JavaScript 代码；
+  - JavaScript 代码执行恶意代码（调用恶意请求，发送数据到攻击者等等）。 
 
+![1607999858382](DjangoAdvanced.assets/1607999858382.png)
 
 
 
@@ -1405,11 +1410,46 @@ Just below solution solved my problem. I am using Windows 10 64bit
 - 创建一个文件夹，创建一个http文件
 - 进入文件夹，执行命令：python -m http.server 7000
 
+- CSRF（Cross-site request forgery，简称：CSRF 或 XSRF）
+- 恶意攻击者在用户不知情的情况下，使用用户的身份来操作
+
+- **黑客的准备步骤**
+- 黑客创建一个 请求网站 A 类似的 URL 的 Web 页面，放在恶意网站 B 中 ，这个文件包含了一个创建用户的表单。这个表单加载完毕就会立即进行提交。
+- 黑客把这个恶意 Web 页面的 URL 发送至超级管理员，诱导超级管理员打开这个 Web 页面。 
+
+![1607999990365](DjangoAdvanced.assets/1607999990365.png)
+
 
 
 
 
 ### Django的安全：SQL注入攻击 
+
+- SQL 注入漏洞: 攻击者直接对网站数据库执行任意 SQL语句，在无需用户权限的情况下即可实现对数据的访问、修改甚至是删除
+- Django 的 ORM 系统自动规避了 SQL 注入攻击
+- 原始 SQL 语句，切记避免拼接字符串，这是错误的调用方式：
+
+```mysql
+query = 'select * from employee where last_name=%s' % name
+Person.objects.raw(query)
+```
+
+- 正确的调用方式， 使用参数绑定： 
+
+```mysql
+name_map = {
+	'first': 'first_name',
+	'last': 'last_name',
+	'db': 'birth_data',
+	'pk': 'id'
+}
+
+Person.objects.raw('select * from employee', translation=name_map)
+```
+
+
+
+
 
 
 
@@ -1423,6 +1463,10 @@ Just below solution solved my problem. I am using Windows 10 64bit
 - curl http://127.0.0.1:8000/api/jobs/
 - 指定用户名密码的curl： curl -u admin:admin http://127.0.0.1:8000/api/jobs/
 
+![1608000289390](DjangoAdvanced.assets/1608000289390.png)
+
+
+
 
 
 ### Django 中使用缓存 
@@ -1431,6 +1475,43 @@ Just below solution solved my problem. I am using Windows 10 64bit
 - redis 安装教程：https://www.runoob.com/redis/redis-install.html
 - redis-server.exe redis.windows.conf
 - redis-cli.exe -h 127.0.0.1 -p 6379
+
+- Django 缓存的存储方式
+  - Memcached 缓存
+  -  Redis 缓存 （需要安装 django-redis 包）
+  - 数据库缓存
+  - 文件系统缓存
+  - 本地内存缓存
+  - 伪缓存( Dummy Cache， 用于开发、测试)
+  - 自定义缓存 
+
+```python
+# 集成redis缓存
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            # "PASSWORD": "mysecret",
+            "SOCKET_CONNECT_TIMEOUT": 5,  # in seconds
+            "SOCKET_TIMEOUT": 5,  # r/w timeout in seconds
+        }
+    }
+}
+```
+
+
+
+#### 缓存策略 
+
+- 缓存的策略
+  - 整站缓存
+  - 视图缓存
+  - 模板片段缓存
+- 缓存启用之后多出来的 
+
+![1608001280438](DjangoAdvanced.assets/1608001280438.png)
 
 
 
@@ -1452,11 +1533,33 @@ Just below solution solved my problem. I am using Windows 10 64bit
 
 
 
+#### 什么是 Celery?
+
+- 一个分布式的任务队列
+  - 简单： 几行代码可以创建一个简单的 Celery 任务
+  - 高可用：工作机会自动重试
+  - 快速：可以执行一分钟上百万的任务
+  - 灵活：每一块都可以扩展 
+
+
+
+#### Celery 使用场景 
+
+- 大量需要使用**异步任务**的场景
+  - 发送电子邮件，发送 IM 消息通知
+  - 爬取网页， 数据分析
+  - 图像、视频处理
+  - 生成报告，深度学习 
+
+![1608001440631](DjangoAdvanced.assets/1608001440631.png)
 
 
 
 
-错误信息：Error: Invalid value for '-A' / '--app':
+
+#### 报错解决
+
+1.错误信息：Error: Invalid value for '-A' / '--app':
 Unable to load celery application.
 The module tasks was not found.
 
@@ -1464,9 +1567,7 @@ link:https://github.com/celery/celery/pull/6383
 
 
 
-
-
-错误信息：ImportError: cannot import name 'Command' from 'celery.bin.base'
+2.错误信息：ImportError: cannot import name 'Command' from 'celery.bin.base'
 
 解决办法：回退版本，pip install celery==4.4.7
 
@@ -1476,9 +1577,7 @@ link2:https://stackoverflow.com/questions/64180054/importerror-cannot-import-nam
 
 
 
-
-
-错误：ValueError: not enough values to unpack (expected 3, got 0)
+3.错误：ValueError: not enough values to unpack (expected 3, got 0)
 
 解决办法：启动celery的时候添加参数 --pool=solo
 
@@ -1488,19 +1587,30 @@ link:https://blog.csdn.net/weixin_44177600/article/details/109037630
 
 
 
-#### Django 与 Celery 集成：异步任务 
+#### Django 与 Celery 集成：实时的 Celery 任务监控系统 
 
 - https://docs.celeryproject.org/en/v4.4.7/django/first-steps-with-django.html
 - 启动celery：
 - 失败：DJANGO_SETTINGS_MODULE=settings.local celery --app recruitment worker -l info
 - 成功：celery --app recruitment worker --pool=solo -l info
 - 失败：celery --app recruitment worker -l info DJANGO_SETTINGS_MODULE=settings.local 
-- set DJANGO_SETTINGS_MODULE=settings.local
+- 成功：set DJANGO_SETTINGS_MODULE=settings.local
 - celery --app recruitment worker --pool=solo -l info
 - 启动应用：
 - python manage.py runserver 0.0.0.0:8000 --settings=settings.local
 - 启动监控，flower：
 - celery -A recruitment flower --broker=redis://localhost:6379/0
+- 访问：http://localhost:5555/
+
+
+
+#### Django 与 Celery 集成：异步任务 
+
+- Celery 4.0 的版本支持 Django 集成
+- 不需要安装额外的库
+- 使用 Celery 的自动发现机制: 自动发现 tasks.py 
+
+![1608001648232](DjangoAdvanced.assets/1608001648232.png)
 
 
 
@@ -1508,9 +1618,32 @@ link:https://blog.csdn.net/weixin_44177600/article/details/109037630
 
 #### Django 与 Celery 集成：定时任务 
 
+- 任务心跳管理进程 – Beat
+- 任务调度器
+  - PersistentScheduler （默认）
+  - DatabaseScheduler
+- 任务存储
+  - File Configuration
+  - Database 
+
+![1608001796432](DjangoAdvanced.assets/1608001796432.png)
+
+
+
+
+
+#### Django 与 Celery 集成：定时任务实践
+
 - 安装 beat: pip install django-celery-beat 
+- 数据库变更 
 - python manage.py makemigrations
 - python manage.py migrate
+- 使用 DatabaseScheduler 启动 beat 或者在 配置中设置 beat_scheduler 
+- 管理定时任务的方法
+  - 在 Admin 后台添加管理定时任务
+  - 系统启动时自动注册定时任务
+  - 直接设置应用的 beat_schedule
+  - 运行时添加定时任务 
 - 启动 beat：
 - set DJANGO_SETTINGS_MODULE=settings.local
 - celery -A recruitment beat --scheduler django_celery_beat.schedulers:DatabaseScheduler
@@ -1525,7 +1658,7 @@ link:https://blog.csdn.net/weixin_44177600/article/details/109037630
 
 
 
-
+#### 报错解决
 
 错误：django.core.exceptions.AppRegistryNotReady: Apps aren't loaded yet.
 
@@ -1542,19 +1675,19 @@ link：https://blog.csdn.net/aoerqileng/article/details/79197243
 
 
 
+### 文件和图片上传 
 
 
 
 
 
+### 多数据库路由 
 
 
 
 
 
-
-
-
+### Django之美 
 
 
 

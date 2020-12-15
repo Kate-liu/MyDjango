@@ -36,7 +36,8 @@ SIMPLE_BACKEND_REDIRECT_URL = "/accounts/login"
 # Application definition
 
 INSTALLED_APPS = [
-    'grappelli',
+    # 'grappelli',  # theme is grappelli
+    'simpleui',  # theme is Simple UI
     'bootstrap4',
     'registration',
     'django.contrib.admin',
